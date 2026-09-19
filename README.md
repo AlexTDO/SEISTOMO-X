@@ -72,9 +72,6 @@ generations will be built. It contains:
 - Physical validation (P and S arrival times) — in progress
 
 
-
-## Repository Structure
-
 ## Repository Structure
 
 ![Repository Structure](Repository_Structure.jpg)
