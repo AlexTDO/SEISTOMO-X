@@ -1,10 +1,9 @@
 ```markdown
 # SEISTOMO-X
 
-A hybrid physics-neural platform for seismic inversion.
-
 ![SEISTOMO-X](Seistomo-X.jpg)
 
+A hybrid physics-neural platform for seismic inversion.
 ---
 
 ## Vision
