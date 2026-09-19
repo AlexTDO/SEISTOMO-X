@@ -1,11 +1,9 @@
-```markdown
+markdown
 # SEISTOMO-X
-
-A hybrid physics-neural platform for seismic inversion.
 
 ![SEISTOMO-X](Seistomo-X.jpg)
 
----
+A hybrid physics-neural platform for seismic inversion.
 
 ## Vision
 
@@ -217,6 +215,5 @@ MIT.
 * **LinkedIn:** [Alex Tito](https://www.linkedin.com/in/alex-tito-779ab511a/?utm_source=gemini)
 * **E-mail:** alextdo.geophysics@gmail.com
 
-```
 
-```
+
