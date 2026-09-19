@@ -4,6 +4,7 @@ markdown
 ![SEISTOMO-X](Seistomo-X.jpg)
 
 A hybrid physics-neural platform for seismic inversion.
+---
 
 ## Vision
 
@@ -70,32 +71,13 @@ generations will be built. It contains:
 - Performance benchmarks — in progress
 - Physical validation (P and S arrival times) — in progress
 
----
+
 
 ## Repository Structure
-seistomo-x/
-├── pyproject.toml
-├── README.md
-├── .gitignore
-├── src/seistomo/
-│   ├── model/           # ElasticModel
-│   ├── acquisition/     # Survey, SurfaceSurvey, CrosswellSurvey, Ricker
-│   ├── physics/
-│   │   ├── elastic/     # Elastic2D
-│   │   ├── fd/          # FiniteDifferenceOperators
-│   │   ├── boundary/    # CPML
-│   │   └── autodiff/
-│   ├── data/
-│   └── visualization/
-├── cpp/cuda/            # Native CUDA backend (planned)
-├── examples/
-│   ├── surface/
-│   └── crosswell/
-├── benchmarks/
-└── tests/
 
+## Repository Structure
 
----
+![Repository Structure](Repository_Structure.jpg)
 
 ## Installation
 
@@ -214,6 +196,7 @@ MIT.
 
 * **LinkedIn:** [Alex Tito](https://www.linkedin.com/in/alex-tito-779ab511a/?utm_source=gemini)
 * **E-mail:** alextdo.geophysics@gmail.com
+
 
 
 
