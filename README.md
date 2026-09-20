@@ -49,7 +49,7 @@ GEN-1 delivers the **foundation** on which all subsequent generations will be bu
 
 ### Highlights
 
-- **Fully differentiable 2D elastic solver (P-SV)** implemented in pure PyTorch. No CUDA C++, no Devito, no external FDTD library — just PyTorch operations that preserve autograd at every step.
+- **Fully differentiable 2D elastic solver (P-SV)** implemented in pure PyTorch. Every operation preserves autograd, so gradients flow from the recorded data back to the model parameters without writing a single adjoint equation.
 
 - **Autodiff works end-to-end.** `loss.backward()` produces gradients with respect to `Vp`, `Vs`, and `ρ` at every cell of the model. This is the foundation for gradient-based FWI in GEN-2.
 
@@ -160,16 +160,6 @@ Three levels of validation are performed.
 
 ## Design Decisions
 
-### Why PyTorch instead of Devito or custom CUDA?
-
-PyTorch provides **autodiff for free**. Every operation in the solver is a tensor operation, which means gradients flow from the recorded data back to the model parameters without writing a single adjoint equation. This is the foundation for GEN-2 (FWI) and GEN-3 (neural operators). The cost is performance — we accept that we are ~2-5x slower than a hand-written CUDA kernel, but the code is 100x simpler and fully differentiable.
-
-### Why eighth-order finite differences?
-
-Eighth-order FD is the **industry standard** for production seismic modeling. It reduces numerical dispersion by approximately **4x** compared to fourth-order, and by **~700x** compared to second-order. The validation above shows that this translates directly into cleaner seismic gathers and more accurate arrival times.
-
-The computational cost is ~30% higher per time step than fourth-order, but the gain in accuracy and visual quality justifies the trade-off for our applications. Orders 2 and 4 remain available via the `fd_order` parameter for users who prioritize speed over precision.
-
 ### Why PyTorch?
 
 PyTorch provides **autodiff for free**, and it already runs on highly optimized CUDA kernels when `device='cuda'` is used. Every operation in the solver is a tensor operation, so gradients flow from the recorded data back to the model parameters without writing a single adjoint equation. This is the foundation for GEN-2 (FWI) and GEN-3 (neural operators).
@@ -184,6 +174,16 @@ For GEN-1, we prioritize:
 - **Correctness** — validated against analytical arrival times
 - **Differentiability** — autodiff works end-to-end
 - **Portability** — same code runs on CPU and GPU without modification
+
+### Why eighth-order finite differences?
+
+Eighth-order FD is the **industry standard** for production seismic modeling. It reduces numerical dispersion by approximately **4x** compared to fourth-order, and by **~700x** compared to second-order. The validation above shows that this translates directly into cleaner seismic gathers and more accurate arrival times.
+
+The computational cost is ~30% higher per time step than fourth-order, but the gain in accuracy and visual quality justifies the trade-off for our applications. Orders 2 and 4 remain available via the `fd_order` parameter for users who prioritize speed over precision.
+
+### Why external PML?
+
+The PML must be a numerical extension **outside** the physical domain, not a region carved out of it. This is the mathematically correct formulation, and it eliminates a class of artifacts that appear when the source or receivers sit inside the PML region. The trade-off is a larger computational grid (336×336 instead of 256×256, ~1.7x more work), but the UX is cleaner: the user never needs to think about PML placement.
 
 ---
 
