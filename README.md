@@ -14,7 +14,7 @@
 
 ## Elastic Wave Propagation in the Marmousi Model
 
-
+https://github.com/user-attachments/assets/47545287-ddee-4148-b9fa-aeccf1ac3185
 
 *Elastic wavefield (P-SV) propagating through the Marmousi Small model. Top panel: pressure wavefield (τxx + τzz) overlaid on the velocity model. Bottom panel: seismic section being recorded at the surface in real time. Simulated with an eighth-order finite-difference solver in PyTorch.*
 
