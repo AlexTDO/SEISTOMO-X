@@ -15,6 +15,7 @@
 ## Elastic Wave Propagation in the Marmousi Model
 
 [![Watch the animation](https://img.shields.io/badge/▶️-Watch_the_animation-FF0000?style=for-the-badge)](examples/animation/wavefield_animation.mp4)
+
 C:\Users\alext\Desktop\seistomo-x\examples\animation\wavefield_animation.mp4
 
 
