@@ -34,10 +34,12 @@ Thumbs.db
 
 # Project outputs
 validation_output/
-*.png
 *.h5
 *.segy
 *.su
+
+# Test artifacts (temporary)
+/gather_order*.npy
 
 # Jupyter
 .ipynb_checkpoints/

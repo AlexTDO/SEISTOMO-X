@@ -46,12 +46,12 @@ def main():
     dt = min(0.001, dt_safe * 0.8)
 
     pml_width = 40
-    nt = 2500
+    nt = 3000
     n_receivers = 80
     source_x = nx // 2
     source_z = 2
     receiver_z = 2
-    frame_every = 25
+    frame_every = 15
     fps = 30
 
     print(f"Aquisição: dt={dt:.5f}s, nt={nt}, n_receivers={n_receivers}")
@@ -67,7 +67,7 @@ def main():
     print("Inicializando solver (grid estendido)...")
     solver = Elastic2D(
         model=model, dt=dt, nt=nt,
-        pml_width=pml_width, fd_order=4, device=device,
+        pml_width=pml_width, fd_order=8, device=device,
     )
     print(f"  Grid físico:    {nz} x {nx}")
     print(f"  Grid estendido: {solver.nz_ext} x {solver.nx_ext} (PML={pml_width})")

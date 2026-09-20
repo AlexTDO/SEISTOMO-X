@@ -26,7 +26,7 @@ from ..boundary.extend import extend_with_pml
 
 class Elastic2D:
     def __init__(self, model: ElasticModel, dt: float, nt: int,
-                 pml_width: int = 20, fd_order: int = 4,
+                 pml_width: int = 20, fd_order: int = 8,
                  device: str = 'cuda' if torch.cuda.is_available() else 'cpu'):
         self.model = model
         self.dt = dt
