@@ -99,6 +99,24 @@ class CPML:
         return corrected
 
     def reset_memory(self):
-        """Zera as variáveis de memória. Chamado no início de cada tiro."""
+        """Zera as variáveis de memória, substituindo-as por tensores novos.
+
+        IMPORTANTE: não usar .zero_() in-place aqui.
+
+        O .zero_() preserva a identidade (e portanto as referências) do
+        tensor, o que faz com que buffers do PML continuem apontando para
+        o grafo autodiff de chamadas anteriores do forward. Quando o solver
+        é reutilizado em loop (FWI), o segundo loss.backward() tenta
+        retropropagar por um grafo cujos tensores foram zerados in-place,
+        resultando em:
+
+            RuntimeError: Trying to backward through the graph a second
+            time (or directly access saved tensors after they have
+            already been freed).
+
+        Substituir o buffer por um tensor novo quebra essas referências e
+        torna o reuso seguro. O custo (uma alocação por buffer por tiro) é
+        desprezível.
+        """
         for key in self.memory:
-            self.memory[key].zero_()
+            self.memory[key] = torch.zeros_like(self.memory[key])

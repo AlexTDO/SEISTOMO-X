@@ -80,6 +80,32 @@ class Elastic2D:
         self.b = 1.0 / rho
         self.lambda_plus_2mu = self.lambda_ + 2 * self.mu
 
+    def update_model(self, model: ElasticModel) -> None:
+        """Recalcula vp_ext/vs_ext/rho_ext e os coeficientes elásticos.
+
+        Necessário para FWI: o modelo Vp muda a cada iteração do
+        otimizador, e os coeficientes derivados (lambda_, mu, b) precisam
+        acompanhar antes do próximo forward. Sem isso, o solver continuaria
+        usando os coeficientes do modelo original (assado no __init__),
+        e o gradiente sairia errado.
+
+        A PML é deliberadamente NÃO recalculada: vp_max é apenas uma
+        escala de normalização dos coeficientes de absorção. Mantê-la
+        fixa no valor inicial é padrão em FWI e evita que a PML
+        "persiga" o modelo.
+
+        O autodiff flui através de F.pad(replicate) até model.vp, então
+        o gradiente de loss w.r.t. vp é corretamente acumulado.
+
+        Para modelagem pura (forward sem inversão), este método não
+        precisa ser chamado — o solver mantém o comportamento original.
+        """
+        self.model = model
+        self.vp_ext = extend_with_pml(model.vp, self.pml_width).to(self.device)
+        self.vs_ext = extend_with_pml(model.vs, self.pml_width).to(self.device)
+        self.rho_ext = extend_with_pml(model.rho, self.pml_width).to(self.device)
+        self._precompute_coefficients()
+
     def _init_fields(self):
         """Inicializa os campos de onda no grid estendido."""
         shape = (self.nz_ext, self.nx_ext)
