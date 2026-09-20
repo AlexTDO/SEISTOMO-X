@@ -2,6 +2,7 @@
 import torch
 import torch.nn.functional as F
 
+
 class FiniteDifferenceOperators:
     """
     Operadores de diferenças finitas otimizados usando convolução.
@@ -12,25 +13,28 @@ class FiniteDifferenceOperators:
         self.dz = dz
         self.order = order
         self.device = device
-        
+
         # Coeficientes de diferenças finitas centrais para a primeira derivada
         # Fórmula: f'(x) ≈ (1/dx) * sum(c_k * f(x + k*dx))
         # Para ordem 2: c = [-0.5, 0, 0.5]
         # Para ordem 4: c = [1/12, -2/3, 0, 2/3, -1/12]
-        # Para ordem 8: c = [-1/280, 4/105, -1/5, 4/5, 0, -4/5, 1/5, -4/105, 1/280]
-        
+        # Para ordem 8: c = [1/280, -4/105, 1/5, -4/5, 0, 4/5, -1/5, 4/105, -1/280]
+
         if order == 2:
             coeffs = torch.tensor([-0.5, 0.0, 0.5], dtype=torch.float32, device=device)
         elif order == 4:
             coeffs = torch.tensor([1/12, -2/3, 0.0, 2/3, -1/12], dtype=torch.float32, device=device)
         elif order == 8:
-            coeffs = torch.tensor([-1/280, 4/105, -1/5, 4/5, 0.0, -4/5, 1/5, -4/105, 1/280], dtype=torch.float32, device=device)
+            coeffs = torch.tensor(
+                [1/280, -4/105, 1/5, -4/5, 0.0, 4/5, -1/5, 4/105, -1/280],
+                dtype=torch.float32, device=device
+            )
         else:
             raise ValueError(f"Ordem {order} não suportada. Use 2, 4 ou 8.")
-        
+
         self.coeffs = coeffs
         self.pad = order // 2
-        
+
         # Cria os kernels de convolução para as derivadas em x e z
         # O kernel tem shape (out_channels=1, in_channels=1, kH, kW)
         # Para d/dx, o kernel é horizontal (1, 1, 1, 2*pad+1)
@@ -61,15 +65,15 @@ class FiniteDifferenceOperators:
             coeffs = torch.tensor([-1/12, 4/3, -5/2, 4/3, -1/12], dtype=torch.float32, device=self.device)
         else:
             raise ValueError("Laplaciano implementado apenas para ordem 2 e 4.")
-        
+
         pad = len(coeffs) // 2
         kernel_x = (coeffs / (self.dx**2)).view(1, 1, 1, -1)
         kernel_z = (coeffs / (self.dz**2)).view(1, 1, -1, 1)
-        
+
         padded_x = F.pad(field.unsqueeze(0).unsqueeze(0), (pad, pad, 0, 0), mode='replicate')
         padded_z = F.pad(field.unsqueeze(0).unsqueeze(0), (0, 0, pad, pad), mode='replicate')
-        
+
         d2x = F.conv2d(padded_x, kernel_x).squeeze(0).squeeze(0)
         d2z = F.conv2d(padded_z, kernel_z).squeeze(0).squeeze(0)
-        
+
         return d2x + d2z
