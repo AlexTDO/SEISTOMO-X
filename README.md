@@ -170,9 +170,20 @@ Eighth-order FD is the **industry standard** for production seismic modeling. It
 
 The computational cost is ~30% higher per time step than fourth-order, but the gain in accuracy and visual quality justifies the trade-off for our applications. Orders 2 and 4 remain available via the `fd_order` parameter for users who prioritize speed over precision.
 
-### Why external PML?
+### Why PyTorch?
 
-The PML must be a numerical extension **outside** the physical domain, not a region carved out of it. This is the mathematically correct formulation, and it eliminates a class of artifacts that appear when the source or receivers sit inside the PML region. The trade-off is a larger computational grid (336×336 instead of 256×256, ~1.7x more work), but the UX is cleaner: the user never needs to think about PML placement.
+PyTorch provides **autodiff for free**, and it already runs on highly optimized CUDA kernels when `device='cuda'` is used. Every operation in the solver is a tensor operation, so gradients flow from the recorded data back to the model parameters without writing a single adjoint equation. This is the foundation for GEN-2 (FWI) and GEN-3 (neural operators).
+
+Beyond PyTorch's built-in GPU support, there is room for **additional parallelization and further optimization**:
+
+- **Multi-GPU execution** — the solver can be distributed across multiple GPUs for large-scale problems.
+- **`torch.compile`** — when a C++ compiler is available, PyTorch can fuse and JIT-compile the time-stepping loop for additional speed.
+- **Custom CUDA kernels** — for the specific stencil of the elastic wave equation, hand-written CUDA kernels can achieve higher throughput than generic tensor operations. This requires careful engineering and is a planned optimization for future generations, once profiling identifies the true bottlenecks.
+
+For GEN-1, we prioritize:
+- **Correctness** — validated against analytical arrival times
+- **Differentiability** — autodiff works end-to-end
+- **Portability** — same code runs on CPU and GPU without modification
 
 ---
 
